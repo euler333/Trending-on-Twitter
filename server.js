@@ -6,14 +6,6 @@ const express=require('express'),
 authorization.authorize();
 app.get('/currentTrends', (req, res) => {
     trends.callTwitter(trends.trendOptions, data => {
-        var trends=data[0].trends,
-            i=trends.length-1;
-        for (i; i>=0; i--) {//removes all trends without tweet volume iterating from back to front to preserve indices
-            if (!trends[i].tweet_volume) trends.splice(i, 1);
-        }
-        trends.sort((a, b) => {//sorts all trends in descending order
-            return b.tweet_volume-a.tweet_volume;
-        });        
         res.send(`
             <!DOCTYPE html>
             <html>
@@ -42,7 +34,7 @@ app.get('/currentTrends', (req, res) => {
                     </div>
                     <script>
                         (() => {
-                            var trends=${JSON.stringify(trends)},
+                            var trends=${JSON.stringify(data[0].trends)},
                                 graph=document.getElementById('graph'),
                                 topics=document.getElementById('topics'),
                                 max=trends[0].tweet_volume,

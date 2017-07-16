@@ -22,7 +22,16 @@ var https = require('https'),
 			response.on('data', chunk => {
 				json += chunk;
 			}).on('end', () => {
-				callback(JSON.parse(json));
+		        var data = JSON.parse(json), 
+		        	trends=data[0].trends,
+		            i=trends.length-1;
+		        for (i; i>=0; i--) {//removes all trends without tweet volume iterating from back to front to preserve indices
+		            if (!trends[i].tweet_volume) trends.splice(i, 1);
+		        }
+		        trends.sort((a, b) => {//sorts all trends in descending order
+		            return b.tweet_volume-a.tweet_volume;
+		        });
+				callback(data);
 			});
 		} else console.error(response.statusCode);
 	};
